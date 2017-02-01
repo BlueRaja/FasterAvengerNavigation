@@ -4,7 +4,7 @@ class UIFacilityGrid_Listener_FAN extends UIScreenListener;
 
 function OnInit(UIScreen screen)
 {
-	if(screen != none && class'XComHQ_FAN'.default.InstantRoomTransitions)
+	if(UIFacilityGrid(screen) != none && class'XComHQ_FAN'.default.InstantRoomTransitions)
 	{
 		UIFacilityGrid(screen).bInstantInterp = true;
 	}
@@ -12,7 +12,7 @@ function OnInit(UIScreen screen)
 
 function OnLoseFocus(UIScreen screen)
 {
-	if(screen != none && class'XComHQ_FAN'.default.InstantRoomTransitions)
+	if(UIFacilityGrid(screen) != none && class'XComHQ_FAN'.default.InstantRoomTransitions)
 	{
 		UIFacilityGrid(screen).bInstantInterp = true;
 	}
@@ -20,5 +20,5 @@ function OnLoseFocus(UIScreen screen)
 
 defaultproperties
 {
-	ScreenClass = UIFacilityGrid
+	ScreenClass = none
 }

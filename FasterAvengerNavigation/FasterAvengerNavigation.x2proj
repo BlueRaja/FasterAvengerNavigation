@@ -31,6 +31,9 @@
     <Content Include="Src\FasterAvengerNavigation\Classes\XCGRI_FAN.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FasterAvengerNavigation\Classes\XComHeadquartersCamera_FAN.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FasterAvengerNavigation\Classes\XComHQ_FAN.uc">
       <SubType>Content</SubType>
     </Content>

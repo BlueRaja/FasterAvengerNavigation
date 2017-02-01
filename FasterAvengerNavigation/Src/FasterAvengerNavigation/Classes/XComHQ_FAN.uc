@@ -1,8 +1,4 @@
-class XComHQ_FAN extends XComHQPresentationLayer config(FasterAvengerNavigation);
-
-var config float AvatarPauseMultiplier;
-var config bool InstantRoomTransitions;
-var config bool SkipHologlobeDissolveAnimation;
+class XComHQ_FAN extends XComHQPresentationLayer;
 
 var private Vector2D DoomEntityLoc; // for doom panning
 
@@ -10,20 +6,26 @@ var protected int TicksTillMap;
 
 function UIArmory_MainMenu(StateObjectReference UnitRef, optional name DispEvent, optional name SoldSpawnEvent, optional name NavBackEvent, optional name HideEvent, optional name RemoveEvent, optional bool bInstant = false)
 {
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
 	if(ScreenStack.IsNotInStack(class'UIArmory_MainMenu'))
-		UIArmory_MainMenu(ScreenStack.Push(Spawn(class'UIArmory_MainMenu', self), Get3DMovie())).InitArmory(UnitRef, , SoldSpawnEvent, , HideEvent, RemoveEvent, bInstant || InstantRoomTransitions);
+		UIArmory_MainMenu(ScreenStack.Push(Spawn(class'UIArmory_MainMenu', self), Get3DMovie())).InitArmory(UnitRef, , SoldSpawnEvent, , HideEvent, RemoveEvent, bInstant || settings.InstantRoomTransitions);
 }
 
 reliable client function CAMLookAtNamedLocation( string strLocation, optional float fInterpTime = 2, optional bool bSkipBaseViewTransition )
 {
-	if(InstantRoomTransitions)
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
+	if(settings.InstantRoomTransitions)
 		fInterpTime *= 0.001f;
 	super.CAMLookAtNamedLocation (strLocation, fInterpTime, bSkipBaseViewTransition);
 }
 
 reliable client function CAMLookAtHQTile( int x, int y, optional float fInterpTime = 2 )
 {
-	if(InstantRoomTransitions)
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
+	if(settings.InstantRoomTransitions)
 		fInterpTime *= 0.001f;
 	super.CAMLookAtHQTile (x, y, fInterpTime);
 }
@@ -34,7 +36,9 @@ reliable client function CAMLookAtHQTile( int x, int y, optional float fInterpTi
 
 function UIEnterStrategyMap(bool bSmoothTransitionFromSideView = false)
 {
-	if(!SkipHologlobeDissolveAnimation || !bSmoothTransitionFromSideView)
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
+	if(!settings.SkipHologlobeDissolveAnimation || !bSmoothTransitionFromSideView)
 	{
 		super.UIEnterStrategyMap(bSmoothTransitionFromSideView);
 		return;
@@ -80,7 +84,9 @@ simulated function Tick( float DeltaTime )
 
 function ExitStrategyMap(bool bSmoothTransitionFromSideView = false)
 {
-	if(!SkipHologlobeDissolveAnimation || !bSmoothTransitionFromSideView)
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
+	if(!settings.SkipHologlobeDissolveAnimation || !bSmoothTransitionFromSideView)
 	{
 		super.ExitStrategyMap(bSmoothTransitionFromSideView);
 		return;
@@ -104,6 +110,8 @@ function ExitStrategyMap(bool bSmoothTransitionFromSideView = false)
 //---------------------------------------------------------------------------------------
 function NonPanClearDoom(bool bPositive)
 {
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
 	StrategyMap2D.SetUIState(eSMS_Flight);
 
 	if(bPositive)
@@ -117,7 +125,7 @@ function NonPanClearDoom(bool bPositive)
 		`XSTRATEGYSOUNDMGR.PlaySoundEvent("Doom_IncreasedScreenTear_ON");
 	}
 
-	SetTimer(3.0f*AvatarPauseMultiplier, false, nameof(NoPanClearDoomPt2));
+	SetTimer(3.0f*settings.AvatarPauseMultiplier, false, nameof(NoPanClearDoomPt2));
 }
 
 //---------------------------------------------------------------------------------------
@@ -125,7 +133,9 @@ function NoPanClearDoomPt2()
 {
 	local XComGameStateHistory History;
 	local XComGameState_HeadquartersAlien AlienHQ;
+    local FAN_Settings settings;
 
+    settings = new class'FAN_Settings';
 	History = `XCOMHISTORY;
 	AlienHQ = XComGameState_HeadquartersAlien(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersAlien'));
 	AlienHQ.ClearPendingDoom();
@@ -135,17 +145,20 @@ function NoPanClearDoomPt2()
 
 	if(AlienHQ.PendingDoomData.Length > 0)
 	{
-		SetTimer(4.0f*AvatarPauseMultiplier, false, nameof(NoPanClearDoomPt2));
+		SetTimer(4.0f*settings.AvatarPauseMultiplier, false, nameof(NoPanClearDoomPt2));
 	}
 	else
 	{
-		SetTimer(4.0f*AvatarPauseMultiplier, false, nameof(UnPanDoomFinished));
+		SetTimer(4.0f*settings.AvatarPauseMultiplier, false, nameof(UnPanDoomFinished));
 	}
 }
 
 //---------------------------------------------------------------------------------------
 function DoomCameraPan(XComGameState_GeoscapeEntity EntityState, bool bPositive, optional bool bFirstFacility = false)
 {
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
+
 	CAMSaveCurrentLocation();
 	StrategyMap2D.SetUIState(eSMS_Flight);
 
@@ -170,21 +183,24 @@ function DoomCameraPan(XComGameState_GeoscapeEntity EntityState, bool bPositive,
 
 	if(bFirstFacility)
 	{
-		SetTimer(3.0f*AvatarPauseMultiplier, false, nameof(StartFirstFacilityCameraPan));
+		SetTimer(3.0f*settings.AvatarPauseMultiplier, false, nameof(StartFirstFacilityCameraPan));
 	}
 	else
 	{
-		SetTimer(3.0f*AvatarPauseMultiplier, false, nameof(StartDoomCameraPan));
+		SetTimer(3.0f*settings.AvatarPauseMultiplier, false, nameof(StartDoomCameraPan));
 	}
 }
 
 //---------------------------------------------------------------------------------------
 function StartDoomCameraPan()
 {
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
+
 	// Pan to the location
 	CAMLookAtEarth(DoomEntityLoc, 0.5f, `HQINTERPTIME);
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent("Doom_Camera_Whoosh");
-	SetTimer((`HQINTERPTIME + 3.0f*AvatarPauseMultiplier), false, nameof(DoomCameraPanComplete));
+	SetTimer((`HQINTERPTIME + 3.0f*settings.AvatarPauseMultiplier), false, nameof(DoomCameraPanComplete));
 }
 
 //---------------------------------------------------------------------------------------
@@ -200,6 +216,8 @@ function DoomCameraPanComplete()
 {
 	local XComGameStateHistory History;
 	local XComGameState_HeadquartersAlien AlienHQ;
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
 
 	History = `XCOMHISTORY;
 	AlienHQ = XComGameState_HeadquartersAlien(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersAlien'));
@@ -210,11 +228,11 @@ function DoomCameraPanComplete()
 
 	if(AlienHQ.PendingDoomData.Length > 0)
 	{
-		SetTimer(4.0f*AvatarPauseMultiplier, false, nameof(DoomCameraPanComplete));
+		SetTimer(4.0f*settings.AvatarPauseMultiplier, false, nameof(DoomCameraPanComplete));
 	}
 	else
 	{
-		SetTimer(4.0f*AvatarPauseMultiplier, false, nameof(UnpanDoomCamera));
+		SetTimer(4.0f*settings.AvatarPauseMultiplier, false, nameof(UnpanDoomCamera));
 	}
 }
 
@@ -261,9 +279,12 @@ function FirstFacilityCameraPanComplete()
 //---------------------------------------------------------------------------------------
 function UnpanDoomCamera()
 {
+    local FAN_Settings settings;
+    settings = new class'FAN_Settings';
+
 	CAMRestoreSavedLocation();
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent("Doom_Camera_Whoosh");
-	SetTimer((`HQINTERPTIME + 3.0f*AvatarPauseMultiplier), false, nameof(UnPanDoomFinished));
+	SetTimer((`HQINTERPTIME + 3.0f*settings.AvatarPauseMultiplier), false, nameof(UnPanDoomFinished));
 }
 
 //---------------------------------------------------------------------------------------
